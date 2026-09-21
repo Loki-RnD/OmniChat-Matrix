@@ -803,7 +803,8 @@ Please see LICENSE in the repository root for full details.
     background: #111814 !important;
     border-radius: 14px !important;
 }
-.mx_Dialog:has(.jade-dialog) .mx_Dialog_header {
+.mx_Dialog:has(.jade-dialog) .mx_Dialog_header,
+.mx_Dialog:has(.jade-dialog) .mx_Dialog_cancelButton {
     display: none;
 }
 .jade-dialog {
