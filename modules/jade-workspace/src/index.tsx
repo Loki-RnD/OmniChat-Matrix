@@ -138,7 +138,12 @@ export class JadeWorkspaceModule implements Module {
                 if (this.api.profile.value.userId !== userId || !this.api.client.getRoom(context.roomId)) return null;
                 return this.registry.current(context);
             },
-            insert: (text, target) => this.api.composer.insertPlaintextIntoComposer(text, target),
+            insert: (text, target) =>
+                this.api.composer.insertPlaintextIntoComposer(
+                    text,
+                    target,
+                    () => shareTarget.getCurrentContext() !== null,
+                ),
         };
         this.api.openDialog<void, DialogBodyProps>({ title: "Jade workspace" }, JadeDialog, {
             context: { ...context },

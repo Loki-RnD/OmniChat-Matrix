@@ -118,6 +118,18 @@ export class WorkspaceModel {
         this.merge({ notice, error: "" });
     };
 
+    public clearDemoHistory = (): void => {
+        if (this.snapshot.mode !== "demo" || !this.adapter.clearHistory) return;
+        const cleared = this.adapter.clearHistory(this.context, this.snapshot.agentId);
+        this.merge({
+            selectedReportId: null,
+            notice:
+                cleared + " finished demo " + (cleared === 1 ? "task" : "tasks") + " cleared from this conversation.",
+            error: "",
+        });
+        this.refresh();
+    };
+
     public openReport = (requestId: string): void => {
         this.merge({ tab: "reports", selectedReportId: requestId, notice: "", error: "" });
     };

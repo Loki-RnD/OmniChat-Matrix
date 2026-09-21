@@ -504,6 +504,23 @@ export function JadeWorkspace(props: WorkspaceProps): JSX.Element {
                                 <p>
                                     See how Jade surfaces an error and lets you retry. No network failure is required.
                                 </p>
+                                <div className="jade-clear-history">
+                                    <p>
+                                        Clear finished demo tasks for the selected Jade instance in this conversation.
+                                    </p>
+                                    <button
+                                        type="button"
+                                        className="jade-secondary"
+                                        disabled={
+                                            !state.tasks.some(
+                                                (task) => task.status === "completed" || task.status === "failed",
+                                            )
+                                        }
+                                        onClick={model.clearDemoHistory}
+                                    >
+                                        Clear finished demo tasks
+                                    </button>
+                                </div>
                             </details>
                         )}
                     </div>

@@ -62,6 +62,8 @@ export interface JadeAdapter {
     subscribe(requestId: string, listener: (task: JadeTask) => void): () => void;
     subscribeAll(listener: () => void): () => void;
     list(context: ConversationContext, agentId: JadeAgent): JadeTask[];
+    /** Optional local-demo maintenance; never clears running work or other contexts. */
+    clearHistory?(context: ConversationContext, agentId: JadeAgent): number;
 }
 
 /** Element composer insertion is allowed only while this target remains verifiable. */

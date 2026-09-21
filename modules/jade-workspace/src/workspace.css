@@ -1222,3 +1222,17 @@ body:has(.jade-shell) {
         max-width: 190px;
     }
 }
+
+.mx_Dialog_fixedWidth:has(.jade-dialog) {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box;
+}
+.jade-clear-history {
+    display: grid;
+    justify-items: start;
+    gap: 12px;
+    border-top: 1px solid var(--jade-border);
+    margin-top: 20px;
+    padding-top: 17px;
+}

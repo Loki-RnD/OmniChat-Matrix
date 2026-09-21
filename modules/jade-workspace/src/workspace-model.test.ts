@@ -96,7 +96,7 @@ describe("room workspace model", () => {
         await vi.runAllTimersAsync();
         model.share(model.getSnapshot().tasks[0]);
         expect(insert).toHaveBeenCalledWith(expect.stringContaining("SYNTHETIC DATA"), { view: "room" });
-        expect(model.getSnapshot().notice).toContain("draft");
+        expect(model.getSnapshot().notice).toContain("insertion requested");
         model.dispose();
         listener.mockClear();
         model.notify("after disposal");

@@ -33,5 +33,5 @@ export function shareReport(
         };
     }
     target.insert(text, { view: expected.target });
-    return { ok: true, reason: "Added to your message draft. Review it in Element before sending." };
+    return { ok: true, reason: "Draft insertion requested — review the composer." };
 }

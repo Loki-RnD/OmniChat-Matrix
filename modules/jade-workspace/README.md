@@ -12,7 +12,7 @@ Build the workspace support packages first, using the root prototype launcher an
 
 ## What works
 
-Room and agent scoped task histories; queued, running, completed, and failed states; failure/retry; synthetic sales and stock reports; CSV download and clipboard copy; separate demo and disconnected modes. History persists locally under `omnichat.jade.prototype.v1` and is capped at 100 tasks. Interrupted tasks become failed on reload instead of pretending to finish.
+Room and agent scoped task histories; queued, running, completed, and failed states; failure/retry; synthetic sales and stock reports; CSV download and clipboard copy; separate demo and disconnected modes. History persists locally under `omnichat.jade.prototype.v1` and is capped at 100 tasks. Interrupted tasks become failed on reload instead of pretending to finish. Tools → Demo test controls includes an explicit Clear finished demo tasks action scoped to the exact conversation and selected Jade instance. It retains running tasks. Standalone Vite hot updates reuse the React root and adapter instances.
 
 The standalone page is independent of Element login and never calls a Matrix homeserver. Both adapters make no network requests. Custom prompts return a labelled, fixed sample briefing; they are not sent to an LLM.
 
@@ -20,7 +20,7 @@ The Element module adds a Jade room-header button and an `@Jade` composer previe
 
 ## Composer safety
 
-Draft insertion requires a currently mounted composer with an exact matching room, target, thread root, reply event and relation type. Unmount, hash navigation, logout, account change, or a relation change invalidate its lease. A thread with no verified identity cannot share.
+Draft insertion requires a currently mounted composer with an exact matching room, target, thread root, reply event and relation type. Unmount, hash navigation, logout, account change, or a relation change invalidate its lease. A thread with no verified identity cannot share. The insertion request also passes a live guard to Element, which rechecks the destination after dispatch and asynchronous selection restoration. UI feedback states that insertion was requested because a stale destination may cancel it.
 
 The prototype host patch supplies the actual composer target, optional reply ID, relation type and explicit thread root. When an older or unpatched host omits those fields, the module intentionally disables Add to message draft. Download/copy remain usable. No plaintext REST message fallback exists.
 

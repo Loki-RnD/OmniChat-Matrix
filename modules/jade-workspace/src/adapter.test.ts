@@ -164,4 +164,32 @@ describe("synthetic Jade adapter", () => {
         expect(adapter.list(reply, request.agentId).map((task) => task.requestId)).toEqual(["reply-one"]);
         await vi.runAllTimersAsync();
     });
+
+    it("clears only finished tasks for the selected conversation and agent, durably", async () => {
+        const storage = memoryStorage();
+        const adapter = new DemoJadeAdapter(storage);
+        const otherRoom = { ...request.context, roomId: "!other:local" };
+        const thread = { ...request.context, target: "thread" as const, threadRootId: "$thread" };
+        await adapter.submit(request);
+        await adapter.submit({ ...request, requestId: "other-agent", agentId: "jade-psk" });
+        await adapter.submit({ ...request, requestId: "other-room", context: otherRoom });
+        await adapter.submit({ ...request, requestId: "thread", context: thread });
+        await vi.runAllTimersAsync();
+        await adapter.submit({ ...request, requestId: "still-running" });
+        const changed = vi.fn();
+        adapter.subscribeAll(changed);
+        expect(adapter.clearHistory(request.context, request.agentId)).toBe(1);
+        expect(changed).toHaveBeenCalledOnce();
+        expect(adapter.list(request.context, request.agentId).map((task) => task.requestId)).toEqual(["still-running"]);
+        expect(adapter.list(request.context, "jade-psk")).toHaveLength(1);
+        expect(adapter.list(otherRoom, request.agentId)).toHaveLength(1);
+        expect(adapter.list(thread, request.agentId)).toHaveLength(1);
+        await vi.runAllTimersAsync();
+        expect(adapter.list(request.context, request.agentId)[0].status).toBe("completed");
+        const reloaded = new DemoJadeAdapter(storage);
+        expect(reloaded.list(request.context, request.agentId).map((task) => task.requestId)).toEqual([
+            "still-running",
+        ]);
+        expect(adapter.clearHistory(otherRoom, "jade-psk")).toBe(0);
+    });
 });

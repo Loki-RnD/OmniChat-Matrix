@@ -11,9 +11,18 @@ import { createRoot } from "react-dom/client";
 import { DemoJadeAdapter, DisconnectedJadeAdapter, getDemoStorage } from "./adapter";
 import { Icon } from "./icons";
 import { JadeWorkspace } from "./workspace";
+import { getStandaloneRuntime, type StandaloneRuntimeCache } from "./standalone-runtime";
 import "./workspace.css";
 
-const adapters = { demo: new DemoJadeAdapter(getDemoStorage()), disconnected: new DisconnectedJadeAdapter() };
+const mountElement = document.getElementById("root");
+if (!mountElement) throw new Error("The standalone root element is missing.");
+const runtimeCache: StandaloneRuntimeCache = import.meta.hot?.data ?? {};
+const runtime = getStandaloneRuntime(
+    runtimeCache,
+    () => createRoot(mountElement),
+    () => ({ demo: new DemoJadeAdapter(getDemoStorage()), disconnected: new DisconnectedJadeAdapter() }),
+);
+const adapters = runtime.adapters;
 const rooms = [
     { id: "!demo-sales:local", name: "sales-operations" },
     { id: "!demo-warehouse:local", name: "warehouse" },
@@ -84,6 +93,4 @@ export function StandaloneApp(): JSX.Element {
     );
 }
 
-const root = document.getElementById("root");
-if (!root) throw new Error("The standalone root element is missing.");
-createRoot(root).render(<StandaloneApp />);
+runtime.root.render(<StandaloneApp />);

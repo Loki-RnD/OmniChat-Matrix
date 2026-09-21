@@ -174,6 +174,26 @@ export class DemoJadeAdapter implements JadeAdapter {
             .map((task) => structuredClone(task));
     }
 
+    /** Remove finished demo tasks only from this exact conversation and Jade instance. */
+    public clearHistory(context: ConversationContext, agentId: JadeAgent): number {
+        let cleared = 0;
+        for (const [requestId, task] of this.tasks) {
+            if (
+                task.agentId === agentId &&
+                sameContext(task.context, context) &&
+                (task.status === "completed" || task.status === "failed")
+            ) {
+                this.tasks.delete(requestId);
+                cleared += 1;
+            }
+        }
+        if (cleared) {
+            this.persist();
+            for (const listener of this.allListeners) listener();
+        }
+        return cleared;
+    }
+
     public async submit(request: JadeRequest): Promise<JadeTask> {
         validateRequest(request);
         const existing = this.tasks.get(request.requestId);
