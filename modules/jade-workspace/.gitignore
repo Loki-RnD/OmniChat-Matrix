@@ -1,0 +1,5 @@
+# Generated module and standalone bundles
+lib/
+dist/
+coverage/
+node_modules/

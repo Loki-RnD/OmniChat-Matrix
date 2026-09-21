@@ -1,0 +1,29 @@
+{
+    "name": "@omnichat/jade-workspace",
+    "private": true,
+    "version": "0.1.0",
+    "type": "module",
+    "main": "lib/index.js",
+    "license": "AGPL-3.0-only",
+    "scripts": {
+        "build": "vite build",
+        "build:standalone": "vite build --config vite.standalone.config.ts",
+        "dev": "vite --config vite.standalone.config.ts",
+        "lint:types": "tsc --noEmit",
+        "test:unit": "vitest run --config vitest.config.ts"
+    },
+    "devDependencies": {
+        "@element-hq/element-web-module-api": "workspace:*",
+        "@types/node": "catalog:",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "@vitejs/plugin-react": "catalog:",
+        "typescript": "catalog:",
+        "vite": "catalog:",
+        "vitest": "catalog:"
+    },
+    "dependencies": {
+        "react": "catalog:",
+        "react-dom": "catalog:"
+    }
+}
