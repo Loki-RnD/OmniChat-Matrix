@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only OR GPL-3.0-only OR LicenseRef-Element-Com
 Please see LICENSE files in the repository root for full details.
 */
 
-import { type RefObject, useCallback, useRef } from "react";
+import { type RefObject, useCallback, useLayoutEffect, useRef } from "react";
 
 import defaultDispatcher from "../../../../../dispatcher/dispatcher";
 import { Action } from "../../../../../dispatcher/actions";
@@ -28,6 +28,14 @@ export function useWysiwygSendActionHandler(
     const roomContext = useScopedRoomContext("timelineRenderingType");
     const composerContext = useComposerContext();
     const timeoutId = useRef<number | null>(null);
+    const activeReceiver = useRef<symbol | null>(null);
+
+    useLayoutEffect(() => {
+        activeReceiver.current = Symbol("composer receiver");
+        return () => {
+            activeReceiver.current = null;
+        };
+    }, [disabled, composerElement, composerFunctions, roomContext.timelineRenderingType]);
 
     const handler = useCallback(
         (payload: ActionPayload) => {
@@ -50,20 +58,33 @@ export function useWysiwygSendActionHandler(
                     composerFunctions.clear();
                     focusComposer(composerElement, context, roomContext, timeoutId);
                     break;
-                case Action.ComposerInsert:
+                case Action.ComposerInsert: {
                     if (payload.timelineRenderingType !== roomContext.timelineRenderingType) break;
                     if (payload.composerType !== ComposerType.Send) break;
+                    if (payload.canInsert && !payload.canInsert()) break;
 
                     if (payload.userId) {
                         // TODO insert mention - see SendMessageComposer
                     } else if (payload.event) {
                         // TODO insert quote message - see SendMessageComposer
                     } else if (payload.text) {
-                        void setSelection(composerContext.selection).then(() =>
-                            composerFunctions.insertText(payload.text),
-                        );
+                        const receiver = activeReceiver.current;
+                        const element = composerElement.current;
+                        void setSelection(composerContext.selection).then(() => {
+                            // Selection restoration yields: navigation or unmount may invalidate the original destination.
+                            if (
+                                !receiver ||
+                                activeReceiver.current !== receiver ||
+                                composerElement.current !== element
+                            ) {
+                                return;
+                            }
+                            if (payload.canInsert && !payload.canInsert()) return;
+                            composerFunctions.insertText(payload.text);
+                        });
                     }
                     break;
+                }
             }
         },
         [disabled, composerElement, roomContext, composerFunctions, composerContext],

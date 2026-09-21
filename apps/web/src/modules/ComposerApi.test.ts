@@ -29,6 +29,20 @@ describe("ComposerApi", () => {
                 composerType: ComposerType.Send,
             } satisfies ComposerInsertPayload);
         });
+        it("forwards the guard without evaluating it before asynchronous delivery", () => {
+            const dispatcher = { dispatch: vi.fn() } as unknown as MatrixDispatcher;
+            const api = new ComposerApi(dispatcher);
+            const canInsert = vi.fn(() => true);
+            api.insertPlaintextIntoComposer("Report", { view: "thread" }, canInsert);
+            expect(canInsert).not.toHaveBeenCalled();
+            expect(dispatcher.dispatch).toHaveBeenCalledWith({
+                action: Action.ComposerInsert,
+                text: "Report",
+                timelineRenderingType: TimelineRenderingType.Thread,
+                composerType: ComposerType.Send,
+                canInsert,
+            } satisfies ComposerInsertPayload);
+        });
         it("throws if called with an invalid view", () => {
             const api = new ComposerApi(new MatrixDispatcher());
             expect(() => api.insertPlaintextIntoComposer("text", { view: "bleh" as "room" })).toThrow(

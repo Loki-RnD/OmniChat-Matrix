@@ -19,6 +19,8 @@ interface IBaseComposerInsertPayload extends ActionPayload {
     action: Action.ComposerInsert;
     timelineRenderingType: TimelineRenderingType;
     composerType?: ComposerType; // falsy if should be re-dispatched to the correct composer
+    /** Recheck at the receiving composer immediately before insertion, after any asynchronous work. */
+    canInsert?: () => boolean;
 }
 
 interface IComposerInsertMentionPayload extends IBaseComposerInsertPayload {

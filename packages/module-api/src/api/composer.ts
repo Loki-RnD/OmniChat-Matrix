@@ -71,8 +71,9 @@ export interface ComposerApi {
      * Insert plaintext into the current composer.
      * @param plaintext - The plain text to insert
      * @param view - The target view to insert text into. Defaults to `{ view: "room" }`
+     * @param canInsert - Optional synchronous guard rechecked immediately before insertion, including after async work.
      * @returns Returns immediately, does not await action.
      * @alpha Likely to change
      */
-    insertPlaintextIntoComposer(plaintext: string, view: ComposerApiTarget): void;
+    insertPlaintextIntoComposer(plaintext: string, view: ComposerApiTarget, canInsert?: () => boolean): void;
 }

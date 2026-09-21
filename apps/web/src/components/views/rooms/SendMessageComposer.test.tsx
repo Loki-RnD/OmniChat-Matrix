@@ -10,7 +10,7 @@ Please see LICENSE files in the repository root for full details.
 
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { fireEvent, render, waitFor } from "test-utils-rtl";
+import { act, fireEvent, render, waitFor } from "test-utils-rtl";
 import { type MatrixClient, MsgType } from "matrix-js-sdk/src/matrix";
 import userEvent from "@testing-library/user-event";
 import { createTestClient, mkEvent, mkStubRoom, stubClient, mockPlatformPeg } from "test-utils";
@@ -23,6 +23,7 @@ import EditorModel from "../../../editor/model";
 import { createPartCreator } from "../../../editor/__mocks__";
 import { MatrixClientPeg } from "../../../MatrixClientPeg";
 import defaultDispatcher from "../../../dispatcher/dispatcher";
+import { ComposerApi } from "../../../modules/ComposerApi";
 import DocumentOffset from "../../../editor/offset";
 import { Layout } from "../../../settings/enums/Layout";
 import { doMaybeLocalRoomAction } from "../../../utils/local-room";
@@ -218,6 +219,32 @@ describe("<SendMessageComposer/>", () => {
                 ),
             });
         };
+
+        it("blocks insertion when context changes during the real dispatcher gap", async () => {
+            const { container } = getComponent();
+            spyDispatcher.mockReset();
+            const api = new ComposerApi(defaultDispatcher);
+            let valid = true;
+            const canInsert = vi.fn(() => valid);
+            await act(async () => {
+                api.insertPlaintextIntoComposer("Wrong destination", { view: "room" }, canInsert);
+                valid = false;
+                await new Promise((resolve) => setTimeout(resolve, 10));
+            });
+            expect(canInsert).toHaveBeenCalledOnce();
+            expect(container.textContent).toBe("");
+        });
+
+        it("inserts guarded text into the unchanged native composer", async () => {
+            const { container } = getComponent();
+            spyDispatcher.mockReset();
+            const api = new ComposerApi(defaultDispatcher);
+            await act(async () => {
+                api.insertPlaintextIntoComposer("Reviewed report", { view: "room" }, () => true);
+                await new Promise((resolve) => setTimeout(resolve, 10));
+            });
+            expect(container.textContent).toBe("Reviewed report");
+        });
 
         it("renders text and placeholder correctly", () => {
             const { container } = getComponent({ placeholder: "placeholder string" });

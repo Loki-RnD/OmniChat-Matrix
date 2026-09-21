@@ -585,6 +585,7 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
             case Action.ComposerInsert:
                 if (payload.timelineRenderingType !== this.context.timelineRenderingType) break;
                 if (payload.composerType !== ComposerType.Send) break;
+                if (payload.canInsert && !payload.canInsert()) break;
 
                 if (payload.userId) {
                     this.editorRef.current?.insertMention(payload.userId);

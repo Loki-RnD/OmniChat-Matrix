@@ -65,13 +65,18 @@ export class ComposerApi
         } satisfies ComposerInsertFilesPayload);
     }
 
-    public insertPlaintextIntoComposer(plaintext: string, view: ComposerApiTarget = { view: "room" }): void {
+    public insertPlaintextIntoComposer(
+        plaintext: string,
+        view: ComposerApiTarget = { view: "room" },
+        canInsert?: () => boolean,
+    ): void {
         if (!["room", "thread"].includes(view.view)) {
             throw new Error(`Invalid view '${view.view}'`);
         }
         this.dispatcher.dispatch({
             action: Action.ComposerInsert,
             text: plaintext,
+            ...(canInsert ? { canInsert } : {}),
             timelineRenderingType: view.view === "room" ? TimelineRenderingType.Room : TimelineRenderingType.Thread,
             // We only support send.
             composerType: ComposerType.Send,
