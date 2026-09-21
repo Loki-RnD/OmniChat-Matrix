@@ -160,4 +160,29 @@ describe("MessageComposerUrlPreview", () => {
         });
         expect(container).toMatchInlineSnapshot(`<div />`);
     });
+
+    test.each([
+        { target: { view: "room" as const }, relation: undefined },
+        { target: { view: "room" as const }, relation: { inReplyToEventId: "$reply" } },
+        { target: { view: "thread" as const }, relation: { threadRootId: "$root", relType: "m.thread" } },
+        {
+            target: { view: "thread" as const },
+            relation: { threadRootId: "$root", inReplyToEventId: "$reply", relType: "m.thread" },
+        },
+    ])("passes exact composer context to extensions: %j", ({ target, relation }) => {
+        const modApi = { customComponents: new CustomComponentsApi() } as ModuleApi;
+        const renderPreview = vi.spyOn(modApi.customComponents, "renderComposerPreview");
+        wrapComponent(
+            <MessageComposerUrlPreviewWrapper
+                moduleApi={modApi}
+                urlPreviewVm={getUrlPreviewVm(client, "@Jade")}
+                target={target}
+                relation={relation}
+            />,
+        );
+        expect(renderPreview).toHaveBeenCalledWith(
+            { text: "@Jade", roomId: "!foo:bar", target, relation },
+            expect.any(Function),
+        );
+    });
 });

@@ -180,6 +180,8 @@ export type CustomComposerPreviewComponentProps = {
      */
     relation?: {
         inReplyToEventId?: string;
+        /** The thread root, independent of a reply to a message within that thread. */
+        threadRootId?: string;
         relType?: string;
     };
 };

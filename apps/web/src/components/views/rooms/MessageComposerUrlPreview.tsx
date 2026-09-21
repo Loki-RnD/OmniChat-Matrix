@@ -7,6 +7,7 @@ Please see LICENSE files in the repository root for full details.
 
 import React, { type JSX, useCallback, type ReactNode } from "react";
 import { MessageComposerUrlPreviewView, useViewModel } from "@element-hq/web-shared-components";
+import type { CustomComposerPreviewComponentProps } from "@element-hq/element-web-module-api";
 
 import { type MessageComposerUrlPreviewViewModel } from "../../../viewmodels/composer/MessageComposerUrlPreviewViewModel";
 import { useScopedRoomContext } from "../../../contexts/ScopedRoomContext";
@@ -18,9 +19,13 @@ import { SettingLevel } from "../../../settings/SettingLevel";
 export function MessageComposerUrlPreviewWrapper({
     urlPreviewVm: vm,
     moduleApi = ModuleApi.instance,
+    target,
+    relation,
 }: {
     urlPreviewVm: MessageComposerUrlPreviewViewModel;
     moduleApi?: ModuleApi;
+    target?: CustomComposerPreviewComponentProps["target"];
+    relation?: CustomComposerPreviewComponentProps["relation"];
 }): ReactNode | null {
     const { roomId } = useScopedRoomContext("showUrlPreview", "roomId");
     const { content } = useViewModel(vm);
@@ -42,7 +47,7 @@ export function MessageComposerUrlPreviewWrapper({
     );
 
     const customComponent = moduleApi.customComponents.renderComposerPreview(
-        { text: content, roomId: roomId! },
+        { text: content, roomId: roomId!, target, relation },
         makeDefaultComposer,
     );
     return customComponent ?? makeDefaultComposer();

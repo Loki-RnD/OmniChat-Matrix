@@ -91,7 +91,7 @@ export interface ClientCreationManagementApi {
 // @alpha
 export interface ComposerApi {
     addFileUploadOption(option: ComposerApiFileUploadOption): void;
-    insertPlaintextIntoComposer(plaintext: string, view: ComposerApiTarget): void;
+    insertPlaintextIntoComposer(plaintext: string, view: ComposerApiTarget, canInsert?: () => boolean): void;
     openFileUploadConfirmation(files: File[], view: ComposerApiTarget): void;
 }
 
@@ -149,6 +149,7 @@ export type CustomComposerPreviewComponentProps = {
     target?: ComposerApiTarget;
     relation?: {
         inReplyToEventId?: string;
+        threadRootId?: string;
         relType?: string;
     };
 };

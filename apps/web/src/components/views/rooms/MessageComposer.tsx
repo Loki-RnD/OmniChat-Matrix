@@ -697,7 +697,15 @@ export class MessageComposer extends React.Component<IProps, IState> {
         return (
             <div className={classes} ref={this.ref} role="region" aria-label={_t("a11y|message_composer")}>
                 <div className="mx_MessageComposer_wrapper">
-                    <MessageComposerUrlPreviewWrapper urlPreviewVm={this.props.urlPreviewVm} />
+                    <MessageComposerUrlPreviewWrapper
+                        urlPreviewVm={this.props.urlPreviewVm}
+                        target={{ view: threadId ? "thread" : "room" }}
+                        relation={{
+                            inReplyToEventId: this.props.replyToEvent?.getId(),
+                            threadRootId: threadId ?? undefined,
+                            relType: this.props.relation?.rel_type,
+                        }}
+                    />
                     <UserIdentityWarning room={this.props.room} key={this.props.room.roomId} />
                     <ReplyPreview
                         replyToEvent={this.props.replyToEvent}
