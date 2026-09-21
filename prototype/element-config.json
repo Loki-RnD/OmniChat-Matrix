@@ -1,0 +1,31 @@
+{
+    "default_server_config": {
+        "m.homeserver": {
+            "base_url": "http://127.0.0.1:8010",
+            "server_name": "omnichat.local"
+        }
+    },
+    "brand": "OmniChat Matrix",
+    "default_theme": "dark",
+    "default_country_code": "KE",
+    "disable_guests": true,
+    "disable_custom_urls": false,
+    "disable_3pid_login": true,
+    "force_verification": false,
+    "integrations_ui_url": "",
+    "integrations_rest_url": "",
+    "integrations_widgets_urls": [],
+    "default_federate": false,
+    "room_directory": {
+        "servers": ["omnichat.local"]
+    },
+    "show_labs_settings": true,
+    "features": {},
+    "setting_defaults": {
+        "breadcrumbs": true
+    },
+    "element_call": {
+        "disable": true
+    },
+    "modules": ["/jade/index.js"]
+}
